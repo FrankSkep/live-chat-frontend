@@ -14,21 +14,31 @@
         username = localStorage.getItem('username') || 'Guest';
         socket = createSocket(username);
 
-        socket.on('rooms', (availableRooms: { name: string, protected: boolean }[]) => {
-            rooms = availableRooms;
-        });
-
-        socket.emit('getRooms');
+        loadRooms();
     });
 
     function createRoom() {
         if (newRoomName.trim() !== '') {
             socket.emit('createRoom', { name: newRoomName, password });
+
+            // Escuchar la confirmación de creación de la room
+            socket.on('roomCreated', (newRoom: { name: string, protected: boolean }) => {
+                rooms = [...rooms, newRoom];
+            });
+
             newRoomName = '';
             password = '';
         } else {
             alert('Please enter a room name.');
         }
+    }
+
+    function loadRooms() {
+        socket.on('rooms', (availableRooms: { name: string, protected: boolean }[]) => {
+            rooms = availableRooms;
+        });
+
+        socket.emit('getRooms');
     }
 </script>
 
@@ -89,6 +99,8 @@
         list-style: none;
         padding: 0;
         margin: 1rem 0;
+        max-height: 300px;
+        overflow-y: auto;
     }
 
     li {
