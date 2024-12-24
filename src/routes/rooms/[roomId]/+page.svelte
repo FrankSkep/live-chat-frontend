@@ -11,6 +11,7 @@
     let typingMessage = '';
     let username = '';
     let socket : any;
+    let sidebarVisible = false;
 
     onMount(() => {
         username = localStorage.getItem('username') || 'Guest';
@@ -93,6 +94,10 @@
     function handleTyping() {
         socket.emit('typing', { room, username });
     }
+
+    function toggleSidebar() {
+        sidebarVisible = !sidebarVisible;
+    }
 </script>
 
 <style>
@@ -122,6 +127,7 @@
         gap: 1rem;
         border-right: 1px solid #0f3460;
         box-sizing: border-box;
+        transition: transform 0.3s ease;
     }
 
     .chat-container {
@@ -213,10 +219,44 @@
         font-style: italic;
         margin-top: 1rem;
     }
+
+    .toggle-sidebar-btn {
+        display: none;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #00adb5;
+        color: #1a1a2e;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            transform: translateX(-100%);
+        }
+
+        .sidebar.visible {
+            transform: translateX(0);
+        }
+
+        .toggle-sidebar-btn {
+            display: block;
+            max-width: 50px;
+        }
+    }
 </style>
 
 <div class="main-container">
-    <div class="sidebar">
+    <button class="toggle-sidebar-btn" on:click={toggleSidebar}>☰</button>
+    <div class="sidebar {sidebarVisible ? 'visible' : ''}">
         <h2>Change or Create Room</h2>
         <label for="room">Room Name</label>
         <input type="text" id="room" bind:value={room} placeholder="Write room name..." />
