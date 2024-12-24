@@ -30,7 +30,8 @@
         });
 
         socket.on('notification', (notification : any) => {
-            messages = [...messages, { sender: 'System', content: notification }];
+            console.log(`Notification: ${notification}`);
+            messages = [...messages, { sender: 'System', content: notification.content, createdAt: notification.createdAt }];
         });
 
         socket.on('typing', (typingMsg : any) => {
