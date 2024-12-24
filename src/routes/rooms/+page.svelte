@@ -11,7 +11,7 @@
     let socket : any;
 
     onMount(() => {
-		username = localStorage.getItem('username') || 'Guest';
+        username = localStorage.getItem('username') || 'Guest';
         socket = createSocket(username);
 
         socket.on('rooms', (availableRooms: { name: string, protected: boolean }[]) => {
@@ -30,37 +30,32 @@
             alert('Please enter a room name.');
         }
     }
-
-    function joinRoom(room: string, password: string) {
-        socket.emit('joinRoom', { room, username, password });
-		console.log('joinRoom', { room, username, password });
-        socket.on('notification', (notification: string) => {
-            if (notification === 'Incorrect room password') {
-                alert(notification);
-            } else {
-                goto(`/rooms/${room}`);
-            }
-        });
-    }
 </script>
 
-<h1>Rooms</h1>
+<div class="container">
+    <h1>Rooms</h1>
 
-<h2>Choose a room</h2>
-<ul>
-    {#each rooms as room}
-        <li>
-            {#if room.protected}
-                <span>🔒</span>
-                <a href="rooms/{room.name}">{room.name}</a>
-            {/if}
-            {#if !room.protected}
-                <span>🌍</span>
-                <a href="rooms/{room.name}">{room.name}</a>
-            {/if}
-        </li>
-    {/each}
-</ul>
+    <h2>Choose a room</h2>
+    <ul>
+        {#each rooms as room}
+            <li>
+                {#if room.protected}
+                    <a href="rooms/{room.name}">{room.name}</a>
+                    <span>🔒</span>
+                {/if}
+                {#if !room.protected}
+                    <a href="rooms/{room.name}">{room.name}</a>
+                    <span>🌍</span>
+                {/if}
+            </li>
+        {/each}
+    </ul>
+
+    <h2>Create a new room</h2>
+    <input bind:value={newRoomName} placeholder="Room name" />
+    <input type="password" placeholder="Password (optional)" bind:value={password} />
+    <button on:click={createRoom}>Create Room</button>
+</div>
 
 <style>
     :global(body) {
@@ -69,26 +64,47 @@
         font-family: 'Roboto', sans-serif;
         margin: 0;
         padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        text-align: center;
+        background: #16213e;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        max-width: 600px;
     }
 
     h1, h2 {
-        text-align: center;
         color: #00adb5;
+        margin-bottom: 1rem;
     }
 
     ul {
         list-style: none;
         padding: 0;
+        margin: 1rem 0;
     }
 
     li {
-        background: #16213e;
+        background: #0f3460;
         margin: 10px 0;
         padding: 10px;
         border-radius: 5px;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: background 0.3s;
+    }
+
+    li:hover {
+        background: #1a1a2e;
     }
 
     li a {
@@ -110,6 +126,13 @@
         border-radius: 5px;
         background: #0f3460;
         color: #e0e0e0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s;
+    }
+
+    input:focus {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        outline: none;
     }
 
     button {
@@ -123,16 +146,16 @@
         color: #1a1a2e;
         font-weight: bold;
         cursor: pointer;
-        transition: background 0.3s;
+        transition: background 0.3s, transform 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     button:hover {
         background: #00a3a5;
+        transform: translateY(-2px);
+    }
+
+    button:active {
+        transform: translateY(0);
     }
 </style>
-
-<h2>Create a new room</h2>
-<input bind:value={newRoomName} placeholder="Room name" />
-<input type="password" placeholder="Password (optional)" bind:value={password} />
-<button on:click={createRoom}>Create Room</button>
-<button on:click={() => joinRoom(newRoomName, password)}>Join</button>

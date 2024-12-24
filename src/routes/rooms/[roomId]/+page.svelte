@@ -95,13 +95,34 @@
         font-family: 'Roboto', sans-serif;
         margin: 0;
         padding: 0;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .main-container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+    }
+
+    .sidebar {
+        width: 300px;
+        background-color: #16213e;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        border-right: 1px solid #0f3460;
+        box-sizing: border-box;
     }
 
     .chat-container {
+        flex-grow: 1;
         display: flex;
         flex-direction: column;
-        height: 100vh;
         padding: 1rem;
+        box-sizing: border-box;
     }
 
     #messages {
@@ -111,6 +132,7 @@
         flex-grow: 1;
         overflow-y: auto;
         margin-bottom: 1rem;
+        max-height: 70vh;
     }
 
     #messages div {
@@ -132,7 +154,12 @@
         gap: 0.5rem;
     }
 
-    input[type="text"] {
+    label {
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+
+    input[type="text"], input[type="password"] {
         display: block;
         width: calc(100% - 20px);
         margin: 0 auto;
@@ -141,6 +168,13 @@
         border-radius: 5px;
         background: #0f3460;
         color: #e0e0e0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s;
+    }
+
+    input[type="text"]:focus, input[type="password"]:focus {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        outline: none;
     }
 
     button {
@@ -154,11 +188,17 @@
         color: #1a1a2e;
         font-weight: bold;
         cursor: pointer;
-        transition: background 0.3s;
+        transition: background 0.3s, transform 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     button:hover {
         background: #00a3a5;
+        transform: translateY(-2px);
+    }
+
+    button:active {
+        transform: translateY(0);
     }
 
     #typing {
@@ -168,22 +208,32 @@
     }
 </style>
 
-<div class="chat-container">
-    <div id="messages">
-        {#each messages as msg}
-            <div>{msg.sender}: {msg.content}
-                <span>{formatDate(msg.createdAt)}</span>
-            </div>
-        {/each}
-    </div>
-    <div class="input-container">
-        <input type="text" bind:value={message} placeholder="Write your message..." on:input={handleTyping} />
-        <button on:click={sendMessage}>Send</button>
-        <button on:click={deleteMessages}>Delete Messages</button>
-        <input type="text" bind:value={room} placeholder="Write room name..." />
-        <input type="text" bind:value={password} placeholder="Password (optional)" />
+<div class="main-container">
+    <div class="sidebar">
+        <h2>Change or Create Room</h2>
+        <label for="room">Room Name</label>
+        <input type="text" id="room" bind:value={room} placeholder="Write room name..." />
+        <label for="password">Password (optional)</label>
+        <input type="password" id="password" bind:value={password} placeholder="Password (optional)" />
         <button on:click={changeRoom}>Connect</button>
         <button on:click={createRoom}>Create Room</button>
-        <div id="typing">{typingMessage}</div>
+    </div>
+
+    <div class="chat-container">
+        <h1>Room: {room}</h1>
+        <div id="messages">
+            {#each messages as msg}
+                <div>{msg.sender}: {msg.content}
+                    <span>{formatDate(msg.createdAt)}</span>
+                </div>
+            {/each}
+        </div>
+        <div class="input-container">
+            <label for="message">Message</label>
+            <input type="text" id="message" bind:value={message} placeholder="Write your message..." on:input={handleTyping} />
+            <button on:click={sendMessage}>Send</button>
+            <button on:click={deleteMessages}>Delete Messages</button>
+            <div id="typing">{typingMessage}</div>
+        </div>
     </div>
 </div>
