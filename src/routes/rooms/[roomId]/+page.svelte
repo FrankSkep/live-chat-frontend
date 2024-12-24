@@ -274,13 +274,16 @@
                     <span>{formatDate(msg.createdAt)}</span>
                 </div>
             {/each}
+            {#if typingMessage}
+                <div id="typing">{typingMessage}</div>
+            {/if}
         </div>
         <div class="input-container">
             <label for="message">Message</label>
             <input type="text" id="message" bind:value={message} placeholder="Write your message..." on:input={handleTyping} />
             <button on:click={sendMessage}>Send</button>
             <button on:click={deleteMessages}>Delete Messages</button>
-            <div id="typing">{typingMessage}</div>
+            <!-- <div id="typing">{typingMessage}</div> -->
         </div>
     </div>
 </div>

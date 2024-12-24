@@ -21,7 +21,7 @@
         if (newRoomName.trim() !== '') {
             socket.emit('createRoom', { name: newRoomName, password });
 
-            // Escuchar la confirmación de creación de la room
+            // listen for the new room to be created
             socket.on('roomCreated', (newRoom: { name: string, protected: boolean }) => {
                 rooms = [...rooms, newRoom];
             });
