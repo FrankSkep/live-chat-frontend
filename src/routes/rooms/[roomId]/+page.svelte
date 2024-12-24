@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, afterUpdate } from 'svelte';
     import createSocket from '$lib/socket';
 
     export let data;
@@ -48,6 +48,13 @@
         socket.on('roomCreated', (room: any) => {
             alert(`Room ${room.name} created successfully`);
         });
+    });
+
+    afterUpdate(() => {
+        const lastMessage = document.querySelector('#messages div:last-child');
+        if (lastMessage) {
+            lastMessage.scrollIntoView({ behavior: 'smooth' });
+        }
     });
 
     function formatDate(dateString : string) : string {
