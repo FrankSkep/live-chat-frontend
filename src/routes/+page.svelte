@@ -1,24 +1,23 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { usernameStore } from '../stores/username';
 
 	let username: string;
 
 	if (browser) {
-	    username = localStorage.getItem('username') || '';
+		username = localStorage.getItem('username') || '';
 	}
 
 	function start() {
 		if (browser) {
-		    if (username !== '' && username.trim() !== '') {
-		        if (username != 'Guest') {
-		            localStorage.setItem('username', username);
-		        }
-		    } else {
-		        username = 'Guest';
-		        localStorage.removeItem('username');
-		    }
+			if (username !== '' && username.trim() !== '') {
+				if (username != 'Guest') {
+					localStorage.setItem('username', username);
+				}
+			} else {
+				username = 'Guest';
+				localStorage.removeItem('username');
+			}
 		}
 		goto('/rooms');
 	}
