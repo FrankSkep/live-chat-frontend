@@ -1,260 +1,109 @@
 <script lang="ts">
-    import { onMount, afterUpdate } from 'svelte';
-    import createSocket from '$lib/socket';
+	import { onMount, afterUpdate } from 'svelte';
+	import createSocket from '$lib/socket';
 
-    export let data;
+	export let data;
 
-    let room = data.roomId;
-    let currentRoom = room;
-    let roomPassword = '';
-    let messages: any = [];
-    let message = '';
-    let typingMessage = '';
-    let username = '';
-    let socket : any;
-    let sidebarVisible = false;
+	let room = data.roomId;
+	let currentRoom = room;
+	let roomPassword = '';
+	let messages: any = [];
+	let message = '';
+	let typingMessage = '';
+	let username = '';
+	let socket: any;
+	let sidebarVisible = false;
 
-    onMount(() => {
-        username = localStorage.getItem('username') || 'Guest';
-        
-        socket = createSocket(username);
+	onMount(() => {
+		username = localStorage.getItem('username') || 'Guest';
 
-        socket.emit('setUsername', username);
-        joinRoom(username);
+		socket = createSocket(username);
 
-        socket.on('messageHistory', (msgs : any) => {
-            messages = msgs;
-        });
+		socket.emit('setUsername', username);
+		joinRoom(username);
 
-        socket.on('message', (msg : any) => {
-            messages = [...messages, msg];
-        });
+		socket.on('messageHistory', (msgs: any) => {
+			messages = msgs;
+		});
 
-        socket.on('notification', (notification : any) => {
-            messages = [...messages, { sender: 'System', content: notification.content, createdAt: notification.createdAt }];
-        });
+		socket.on('message', (msg: any) => {
+			messages = [...messages, msg];
+		});
 
-        socket.on('typing', (typingMsg : any) => {
-            typingMessage = typingMsg;
-        });
+		socket.on('notification', (notification: any) => {
+			messages = [
+				...messages,
+				{ sender: 'System', content: notification.content, createdAt: notification.createdAt }
+			];
+		});
 
-        socket.on('deleteMessages', () => {
-            messages = [];
+		socket.on('typing', (typingMsg: any) => {
+			typingMessage = typingMsg;
+		});
 
-            const messagesDiv = document.getElementById('messages');
-            if (messagesDiv) {
-                messagesDiv.innerHTML = '';
-            }
-        });
+		socket.on('deleteMessages', () => {
+			messages = [];
 
-        socket.on('roomCreated', (room: any) => {
-            alert(`Room ${room.name} created successfully`);
-        });
-    });
+			const messagesDiv = document.getElementById('messages');
+			if (messagesDiv) {
+				messagesDiv.innerHTML = '';
+			}
+		});
 
-    afterUpdate(() => {
-        const lastMessage = document.querySelector('#messages div:last-child');
-        if (lastMessage) {
-            lastMessage.scrollIntoView({ behavior: 'smooth' });
-        }
-    });
+		socket.on('roomCreated', (room: any) => {
+			alert(`Room ${room.name} created successfully`);
+		});
+	});
 
-    function formatDate(dateString : string) : string {
-        const date = new Date(dateString);
-        return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-    }
+	afterUpdate(() => {
+		const lastMessage = document.querySelector('#messages div:last-child');
+		if (lastMessage) {
+			lastMessage.scrollIntoView({ behavior: 'smooth' });
+		}
+	});
 
-    function sendMessage() {
-        if (message.trim() !== '') {
-            socket.emit('message', { sender: username, content: message, room });
-            message = '';
-        } else {
-            alert('Please enter a message.');
-        }
-    }
+	function formatDate(dateString: string): string {
+		const date = new Date(dateString);
+		return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+	}
 
-    function deleteMessages() {
-        console.log(`Deleting messages in room ${room}`);
-        socket.emit('deleteMessages', room);
-    }
+	function sendMessage() {
+		if (message.trim() !== '') {
+			socket.emit('message', { sender: username, content: message, room });
+			message = '';
+		} else {
+			alert('Please enter a message.');
+		}
+	}
 
-    function changeRoom() {
-        messages = [];
-        socket.emit('leaveRoom', { room });
-        socket.emit('joinRoom', { room, username, roomPassword });
-        currentRoom = room;
-    }
+	function deleteMessages() {
+		console.log(`Deleting messages in room ${room}`);
+		socket.emit('deleteMessages', room);
+	}
 
-    function joinRoom(username: string) {
-        socket.emit('joinRoom', { room, username, roomPassword });
-    }
+	function changeRoom() {
+		messages = [];
+		socket.emit('leaveRoom', { room });
+		socket.emit('joinRoom', { room, username, roomPassword });
+		currentRoom = room;
+	}
 
-    function createRoom() {
-        socket.emit('createRoom', { name: room, roomPassword });
-    }
+	function joinRoom(username: string) {
+		socket.emit('joinRoom', { room, username, roomPassword });
+	}
 
-    function handleTyping() {
-        socket.emit('typing', { room, username });
-    }
+	function createRoom() {
+		socket.emit('createRoom', { name: room, roomPassword });
+	}
 
-    function toggleSidebar() {
-        sidebarVisible = !sidebarVisible;
-    }
+	function handleTyping() {
+		socket.emit('typing', { room, username });
+	}
+
+	function toggleSidebar() {
+		sidebarVisible = !sidebarVisible;
+	}
 </script>
-
-<style>
-    :global(body) {
-        background-color: #1a1a2e;
-        color: #e0e0e0;
-        font-family: 'Roboto', sans-serif;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        height: 100vh;
-        overflow: hidden;
-    }
-
-    .main-container {
-        display: flex;
-        width: 100%;
-        height: 100%;
-    }
-
-    .sidebar {
-        width: 300px;
-        background-color: #16213e;
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        border-right: 1px solid #0f3460;
-        box-sizing: border-box;
-        transition: transform 0.3s ease;
-    }
-
-    .chat-container {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        padding: 1rem;
-        box-sizing: border-box;
-    }
-
-    #messages {
-        background-color: #16213e;
-        padding: 1rem;
-        border-radius: 5px;
-        flex-grow: 1;
-        overflow-y: auto;
-        margin-bottom: 1rem;
-        max-height: 70vh;
-    }
-
-    #messages div {
-        background-color: #0f3460;
-        padding: 0.5rem;
-        border-radius: 5px;
-        margin-bottom: 0.5rem;
-    }
-
-    #messages div span {
-        display: block;
-        font-size: 0.8rem;
-        color: #a0a0a0;
-    }
-
-    .input-container {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    label {
-        margin-bottom: 0.5rem;
-        font-weight: bold;
-    }
-
-    input[type="text"], input[type="roomPassword"] {
-        display: block;
-        width: calc(100% - 20px);
-        margin: 0 auto;
-        padding: 10px;
-        border: none;
-        border-radius: 5px;
-        background: #0f3460;
-        color: #e0e0e0;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: box-shadow 0.3s;
-    }
-
-    input[type="text"]:focus, input[type="roomPassword"]:focus {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        outline: none;
-    }
-
-    button {
-        display: block;
-        width: calc(100% - 20px);
-        margin: 0 auto;
-        padding: 10px;
-        border: none;
-        border-radius: 5px;
-        background: #00adb5;
-        color: #1a1a2e;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background 0.3s, transform 0.3s;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    button:hover {
-        background: #00a3a5;
-        transform: translateY(-2px);
-    }
-
-    button:active {
-        transform: translateY(0);
-    }
-
-    #typing {
-        color: #00adb5;
-        font-style: italic;
-        margin-top: 1rem;
-    }
-
-    .toggle-sidebar-btn {
-        display: none;
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: #00adb5;
-        color: #1a1a2e;
-        border: none;
-        padding: 10px;
-        border-radius: 5px;
-        cursor: pointer;
-        z-index: 1000;
-    }
-
-    @media (max-width: 768px) {
-        .sidebar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            transform: translateX(-100%);
-        }
-
-        .sidebar.visible {
-            transform: translateX(0);
-        }
-
-        .toggle-sidebar-btn {
-            display: block;
-            max-width: 50px;
-        }
-    }
-</style>
 
 <div class="main-container">
     <button class="toggle-sidebar-btn" on:click={toggleSidebar}>☰</button>
@@ -289,3 +138,161 @@
         </div>
     </div>
 </div>
+
+<style>
+	:global(body) {
+		background-color: #1a1a2e;
+		color: #e0e0e0;
+		font-family: 'Roboto', sans-serif;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		height: 100vh;
+		overflow: hidden;
+	}
+
+	.main-container {
+		display: flex;
+		width: 100%;
+		height: 100%;
+	}
+
+	.sidebar {
+		width: 300px;
+		background-color: #16213e;
+		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		border-right: 1px solid #0f3460;
+		box-sizing: border-box;
+		transition: transform 0.3s ease;
+	}
+
+	.chat-container {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		padding: 1rem;
+		box-sizing: border-box;
+	}
+
+	#messages {
+		background-color: #16213e;
+		padding: 1rem;
+		border-radius: 5px;
+		flex-grow: 1;
+		overflow-y: auto;
+		margin-bottom: 1rem;
+		max-height: 70vh;
+	}
+
+	#messages div {
+		background-color: #0f3460;
+		padding: 0.5rem;
+		border-radius: 5px;
+		margin-bottom: 0.5rem;
+	}
+
+	#messages div span {
+		display: block;
+		font-size: 0.8rem;
+		color: #a0a0a0;
+	}
+
+	.input-container {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	label {
+		margin-bottom: 0.5rem;
+		font-weight: bold;
+	}
+
+	input[type='text'],
+	input[type='roomPassword'] {
+		display: block;
+		width: calc(100% - 20px);
+		margin: 0 auto;
+		padding: 10px;
+		border: none;
+		border-radius: 5px;
+		background: #0f3460;
+		color: #e0e0e0;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		transition: box-shadow 0.3s;
+	}
+
+	input[type='text']:focus,
+	input[type='roomPassword']:focus {
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		outline: none;
+	}
+
+	button {
+		display: block;
+		width: calc(100% - 20px);
+		margin: 0 auto;
+		padding: 10px;
+		border: none;
+		border-radius: 5px;
+		background: #00adb5;
+		color: #1a1a2e;
+		font-weight: bold;
+		cursor: pointer;
+		transition:
+			background 0.3s,
+			transform 0.3s;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+
+	button:hover {
+		background: #00a3a5;
+		transform: translateY(-2px);
+	}
+
+	button:active {
+		transform: translateY(0);
+	}
+
+	#typing {
+		color: #00adb5;
+		font-style: italic;
+		margin-top: 1rem;
+	}
+
+	.toggle-sidebar-btn {
+		display: none;
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		background: #00adb5;
+		color: #1a1a2e;
+		border: none;
+		padding: 10px;
+		border-radius: 5px;
+		cursor: pointer;
+		z-index: 1000;
+	}
+
+	@media (max-width: 768px) {
+		.sidebar {
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 100%;
+			transform: translateX(-100%);
+		}
+
+		.sidebar.visible {
+			transform: translateX(0);
+		}
+
+		.toggle-sidebar-btn {
+			display: block;
+			max-width: 50px;
+		}
+	}
+</style>
