@@ -5,7 +5,8 @@
     export let data;
 
     let room = data.roomId;
-    let password = '';
+    let currentRoom = room;
+    let roomPassword = '';
     let messages: any = [];
     let message = '';
     let typingMessage = '';
@@ -30,7 +31,6 @@
         });
 
         socket.on('notification', (notification : any) => {
-            console.log(`Notification: ${notification}`);
             messages = [...messages, { sender: 'System', content: notification.content, createdAt: notification.createdAt }];
         });
 
@@ -81,15 +81,16 @@
     function changeRoom() {
         messages = [];
         socket.emit('leaveRoom', { room });
-        socket.emit('joinRoom', { room, username, password });
+        socket.emit('joinRoom', { room, username, roomPassword });
+        currentRoom = room;
     }
 
     function joinRoom(username: string) {
-        socket.emit('joinRoom', { room, username, password });
+        socket.emit('joinRoom', { room, username, roomPassword });
     }
 
     function createRoom() {
-        socket.emit('createRoom', { name: room, password });
+        socket.emit('createRoom', { name: room, roomPassword });
     }
 
     function handleTyping() {
@@ -173,7 +174,7 @@
         font-weight: bold;
     }
 
-    input[type="text"], input[type="password"] {
+    input[type="text"], input[type="roomPassword"] {
         display: block;
         width: calc(100% - 20px);
         margin: 0 auto;
@@ -186,7 +187,7 @@
         transition: box-shadow 0.3s;
     }
 
-    input[type="text"]:focus, input[type="password"]:focus {
+    input[type="text"]:focus, input[type="roomPassword"]:focus {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         outline: none;
     }
@@ -261,14 +262,14 @@
         <h2>Change or Create Room</h2>
         <label for="room">Room Name</label>
         <input type="text" id="room" bind:value={room} placeholder="Write room name..." />
-        <label for="password">Password (optional)</label>
-        <input type="password" id="password" bind:value={password} placeholder="Password (optional)" />
+        <label for="roomPassword">Password (optional)</label>
+        <input type="roomPassword" id="roomPassword" bind:value={roomPassword} placeholder="Password (optional)" />
         <button on:click={changeRoom}>Connect</button>
         <button on:click={createRoom}>Create Room</button>
     </div>
 
     <div class="chat-container">
-        <h1>Room: {room}</h1>
+        <h1>Room: {currentRoom}</h1>
         <div id="messages">
             {#each messages as msg}
                 <div>{msg.sender}: {msg.content}
