@@ -41,6 +41,9 @@ The backend repository for this frontend can be found at [https://github.com/Fra
     npm run dev
     ```
 
+4. Open the application:
+    Open your browser and navigate to `http://localhost:5177` to see the application running.
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
