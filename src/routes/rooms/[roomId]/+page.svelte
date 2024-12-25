@@ -1,108 +1,121 @@
 <script lang="ts">
-	import { onMount, afterUpdate } from 'svelte';
-	import createSocket from '$lib/socket';
+    import { onMount, afterUpdate } from 'svelte';
+    import createSocket from '$lib/socket';
 
-	export let data;
+    export let data;
 
-	let room = data.roomId;
-	let currentRoom = room;
-	let password = '';
-	let messages: any = [];
-	let message = '';
-	let typingMessage = '';
-	let username = '';
-	let socket: any;
-	let sidebarVisible = false;
+    let room = data.roomId;
+    let currentRoom = room;
+    let password = '';
+    let messages: any = [];
+    let message = '';
+    let typingMessage = '';
+    let username = '';
+    let socket: any;
+    let sidebarVisible = false;
+    let isPasswordCorrect = false;
 
-	onMount(() => {
-		username = localStorage.getItem('username') || 'Guest';
+    onMount(() => {
+        username = localStorage.getItem('username') || 'Guest';
 
-		socket = createSocket(username);
+        socket = createSocket(username);
 
-		socket.emit('setUsername', username);
-		joinRoom(username);
+        socket.emit('setUsername', username);
+        joinRoom(username);
 
-		socket.on('messageHistory', (msgs: any) => {
-			messages = msgs;
-		});
+        socket.on('messageHistory', (msgs: any) => {
+            messages = msgs;
+        });
 
-		socket.on('message', (msg: any) => {
-			messages = [...messages, msg];
-		});
+        socket.on('message', (msg: any) => {
+            messages = [...messages, msg];
+        });
 
-		socket.on('notification', (notification: any) => {
-			messages = [
-				...messages,
-				{ sender: 'System', content: notification.content, createdAt: notification.createdAt }
-			];
-		});
+        socket.on('notification', (notification: any) => {
+            messages = [
+                ...messages,
+                { sender: 'System', content: notification.content, createdAt: notification.createdAt }
+            ];
+        });
 
-		socket.on('typing', (typingMsg: any) => {
-			typingMessage = typingMsg;
-		});
+        socket.on('typing', (typingMsg: any) => {
+            typingMessage = typingMsg;
+        });
 
-		socket.on('deleteMessages', () => {
-			messages = [];
+        socket.on('deleteMessages', () => {
+            messages = [];
 
-			const messagesDiv = document.getElementById('messages');
-			if (messagesDiv) {
-				messagesDiv.innerHTML = '';
-			}
-		});
+            const messagesDiv = document.getElementById('messages');
+            if (messagesDiv) {
+                messagesDiv.innerHTML = '';
+            }
+        });
 
-		socket.on('roomCreated', (room: any) => {
-			alert(`Room ${room.name} created successfully`);
-		});
-	});
+        socket.on('roomCreated', (room: any) => {
+            alert(`Room ${room.name} created successfully`);
+        });
 
-	afterUpdate(() => {
-		const lastMessage = document.querySelector('#messages div:last-child');
-		if (lastMessage) {
-			lastMessage.scrollIntoView({ behavior: 'smooth' });
-		}
-	});
+        socket.on('passwordStatus', (status: boolean) => {
+            isPasswordCorrect = status;
+            if (!status) {
+                alert('Incorrect password');
+            }
+        });
+    });
 
-	function formatDate(dateString: string): string {
-		const date = new Date(dateString);
-		return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-	}
+    afterUpdate(() => {
+        const lastMessage = document.querySelector('#messages div:last-child');
+        if (lastMessage) {
+            lastMessage.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
 
-	function sendMessage() {
-		if (message.trim() !== '') {
-			socket.emit('message', { sender: username, content: message, room });
-			message = '';
-		} else {
-			alert('Please enter a message.');
-		}
-	}
+    function formatDate(dateString: string): string {
+        const date = new Date(dateString);
+        return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    }
 
-	function deleteMessages() {
-		console.log(`Deleting messages in room ${room}`);
-		socket.emit('deleteMessages', room);
-	}
+    function sendMessage() {
+        if (!isPasswordCorrect) {
+            alert('Cannot send message. Incorrect password.');
+            return;
+        }
+        if (message.trim() !== '') {
+            socket.emit('message', { sender: username, content: message, room });
+            message = '';
+        } else {
+            alert('Please enter a message.');
+        }
+    }
 
-	function changeRoom() {
-		messages = [];
-		socket.emit('leaveRoom', { room });
-		socket.emit('joinRoom', { room, username, password });
-		currentRoom = room;
-	}
+    function deleteMessages() {
+        console.log(`Deleting messages in room ${room}`);
+        socket.emit('deleteMessages', room);
+    }
 
-	function joinRoom(username: string) {
-		socket.emit('joinRoom', { room, username, password });
-	}
+    function changeRoom() {
+        messages = [];
+        socket.emit('leaveRoom', { room });
+        socket.emit('joinRoom', { room, username, password });
+        
+        currentRoom = room;
+    }
 
-	function createRoom() {
-		socket.emit('createRoom', { name: room, password });
-	}
+    function joinRoom(username: string) {
+        socket.emit('joinRoom', { room, username, password });
+    }
 
-	function handleTyping() {
-		socket.emit('typing', { room, username });
-	}
+    function createRoom() {
+        socket.emit('createRoom', { name: room, password });
+    }
 
-	function toggleSidebar() {
-		sidebarVisible = !sidebarVisible;
-	}
+    function handleTyping() {
+        socket.emit('typing', { room, username });
+    }
+
+    function toggleSidebar() {
+        sidebarVisible = !sidebarVisible;
+    }
 </script>
 
 <div class="main-container">
@@ -134,7 +147,6 @@
             <input type="text" id="message" bind:value={message} placeholder="Write your message..." on:input={handleTyping} />
             <button on:click={sendMessage}>Send</button>
             <button on:click={deleteMessages}>Delete Messages</button>
-            <!-- <div id="typing">{typingMessage}</div> -->
         </div>
     </div>
 </div>
