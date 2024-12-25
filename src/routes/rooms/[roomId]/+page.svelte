@@ -140,159 +140,166 @@
 </div>
 
 <style>
-	:global(body) {
-		background-color: #1a1a2e;
-		color: #e0e0e0;
-		font-family: 'Roboto', sans-serif;
-		margin: 0;
-		padding: 0;
-		display: flex;
-		height: 100vh;
-		overflow: hidden;
-	}
+    :global(body) {
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        color: #e0e0e0;
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
 
-	.main-container {
-		display: flex;
-		width: 100%;
-		height: 100%;
-	}
+    .main-container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+    }
 
-	.sidebar {
-		width: 300px;
-		background-color: #16213e;
-		padding: 1rem;
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		border-right: 1px solid #0f3460;
-		box-sizing: border-box;
-		transition: transform 0.3s ease;
-	}
+    .sidebar {
+        width: 300px;
+        background-color: rgba(22, 33, 62, 0.9);
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        border-right: 1px solid #0f3460;
+        box-sizing: border-box;
+        transition: transform 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
 
-	.chat-container {
-		flex-grow: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		box-sizing: border-box;
-	}
+    .chat-container {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+        box-sizing: border-box;
+    }
 
-	#messages {
-		background-color: #16213e;
-		padding: 1rem;
-		border-radius: 5px;
-		flex-grow: 1;
-		overflow-y: auto;
-		margin-bottom: 1rem;
-		max-height: 70vh;
-	}
+    #messages {
+        background-color: rgba(22, 33, 62, 0.9);
+        padding: 1rem;
+        border-radius: 5px;
+        flex-grow: 1;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+        max-height: 70vh;
+        backdrop-filter: blur(10px);
+    }
 
-	#messages div {
-		background-color: #0f3460;
-		padding: 0.5rem;
-		border-radius: 5px;
-		margin-bottom: 0.5rem;
-	}
+    #messages div {
+        background-color: #0f3460;
+        padding: 0.5rem;
+        border-radius: 5px;
+        margin-bottom: 0.5rem;
+        transition: transform 0.3s;
+    }
 
-	#messages div span {
-		display: block;
-		font-size: 0.8rem;
-		color: #a0a0a0;
-	}
+    #messages div:hover {
+        transform: translateY(-2px);
+    }
 
-	.input-container {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
+    #messages div span {
+        display: block;
+        font-size: 0.8rem;
+        color: #a0a0a0;
+    }
 
-	label {
-		margin-bottom: 0.5rem;
-		font-weight: bold;
-	}
+    .input-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 
-	input[type='text'],
-	input[type='password'] {
-		display: block;
-		width: calc(100% - 20px);
-		margin: 0 auto;
-		padding: 10px;
-		border: none;
-		border-radius: 5px;
-		background: #0f3460;
-		color: #e0e0e0;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		transition: box-shadow 0.3s;
-	}
+    label {
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
 
-	input[type='text']:focus,
-	input[type='password']:focus {
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-		outline: none;
-	}
+    input[type='text'],
+    input[type='password'] {
+        display: block;
+        width: calc(100% - 20px);
+        margin: 0 auto;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background: #0f3460;
+        color: #e0e0e0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s;
+    }
 
-	button {
-		display: block;
-		width: calc(100% - 20px);
-		margin: 0 auto;
-		padding: 10px;
-		border: none;
-		border-radius: 5px;
-		background: #00adb5;
-		color: #1a1a2e;
-		font-weight: bold;
-		cursor: pointer;
-		transition:
-			background 0.3s,
-			transform 0.3s;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	}
+    input[type='text']:focus,
+    input[type='password']:focus {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        outline: none;
+    }
 
-	button:hover {
-		background: #00a3a5;
-		transform: translateY(-2px);
-	}
+    button {
+        display: block;
+        width: calc(100% - 20px);
+        margin: 0 auto;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background: #00adb5;
+        color: #1a1a2e;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        color: white;
+    }
 
-	button:active {
-		transform: translateY(0);
-	}
+    button:hover {
+        background: #00a3a5;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
 
-	#typing {
-		color: #00adb5;
-		font-style: italic;
-		margin-top: 1rem;
-	}
+    button:active {
+        transform: translateY(0);
+    }
 
-	.toggle-sidebar-btn {
-		display: none;
-		position: absolute;
-		top: 10px;
-		right: 10px;
-		background: #00adb5;
-		color: #1a1a2e;
-		border: none;
-		padding: 10px;
-		border-radius: 5px;
-		cursor: pointer;
-		z-index: 1000;
-	}
+    #typing {
+        color: #00adb5;
+        font-style: italic;
+        margin-top: 1rem;
+    }
 
-	@media (max-width: 768px) {
-		.sidebar {
-			position: absolute;
-			top: 0;
-			left: 0;
-			height: 100%;
-			transform: translateX(-100%);
-		}
+    .toggle-sidebar-btn {
+        display: none;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #00adb5;
+        color: #1a1a2e;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        z-index: 1000;
+    }
 
-		.sidebar.visible {
-			transform: translateX(0);
-		}
+    @media (max-width: 768px) {
+        .sidebar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            transform: translateX(-100%);
+        }
 
-		.toggle-sidebar-btn {
-			display: block;
-			max-width: 50px;
-		}
-	}
+        .sidebar.visible {
+            transform: translateX(0);
+        }
+
+        .toggle-sidebar-btn {
+            display: block;
+            max-width: 50px;
+        }
+    }
 </style>

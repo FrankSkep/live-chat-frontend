@@ -161,6 +161,7 @@
 			background 0.3s,
 			transform 0.3s;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		color: white;
 	}
 
 	button:hover {
