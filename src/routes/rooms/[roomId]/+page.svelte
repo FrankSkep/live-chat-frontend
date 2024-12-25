@@ -6,7 +6,7 @@
 
 	let room = data.roomId;
 	let currentRoom = room;
-	let roomPassword = '';
+	let password = '';
 	let messages: any = [];
 	let message = '';
 	let typingMessage = '';
@@ -84,16 +84,16 @@
 	function changeRoom() {
 		messages = [];
 		socket.emit('leaveRoom', { room });
-		socket.emit('joinRoom', { room, username, roomPassword });
+		socket.emit('joinRoom', { room, username, password });
 		currentRoom = room;
 	}
 
 	function joinRoom(username: string) {
-		socket.emit('joinRoom', { room, username, roomPassword });
+		socket.emit('joinRoom', { room, username, password });
 	}
 
 	function createRoom() {
-		socket.emit('createRoom', { name: room, roomPassword });
+		socket.emit('createRoom', { name: room, password });
 	}
 
 	function handleTyping() {
@@ -111,8 +111,8 @@
         <h2>Change or Create Room</h2>
         <label for="room">Room Name</label>
         <input type="text" id="room" bind:value={room} placeholder="Write room name..." />
-        <label for="roomPassword">Password (optional)</label>
-        <input type="roomPassword" id="roomPassword" bind:value={roomPassword} placeholder="Password (optional)" />
+        <label for="password">Password (optional)</label>
+        <input type="password" id="password" bind:value={password} placeholder="Password (optional)" />
         <button on:click={changeRoom}>Connect</button>
         <button on:click={createRoom}>Create Room</button>
     </div>
@@ -212,7 +212,7 @@
 	}
 
 	input[type='text'],
-	input[type='roomPassword'] {
+	input[type='password'] {
 		display: block;
 		width: calc(100% - 20px);
 		margin: 0 auto;
@@ -226,7 +226,7 @@
 	}
 
 	input[type='text']:focus,
-	input[type='roomPassword']:focus {
+	input[type='password']:focus {
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 		outline: none;
 	}

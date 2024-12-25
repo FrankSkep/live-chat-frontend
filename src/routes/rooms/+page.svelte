@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
 	import createSocket from '$lib/socket';
 
 	let rooms: { name: string; protected: boolean }[] = [];
 	let newRoomName = '';
-	let room = '';
 	let username = '';
 	let password = '';
 	let socket: any;
