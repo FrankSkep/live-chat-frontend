@@ -28,7 +28,7 @@ The backend repository for this frontend can be found at [https://github.com/Fra
 1. Clone the repository:
     ```sh
     git clone https://github.com/FrankSkep/live-chat-frontend
-    cd real-time-chat-frontend
+    cd live-chat-frontend
     ```
 
 2. Install dependencies:
