@@ -97,8 +97,8 @@
     }
 
     function deleteMessages() {
-        console.log(`Deleting messages in room ${room}`);
         socket.emit('deleteMessages', room);
+        window.location.reload();
     }
 
     function changeRoom() {
