@@ -34,7 +34,11 @@
         socket.on('notification', (notification: any) => {
             messages = [
                 ...messages,
-                { sender: 'System', content: notification.content, createdAt: notification.createdAt }
+                {
+                    sender: 'System',
+                    content: notification.content,
+                    createdAt: notification.createdAt,
+                },
             ];
         });
 
@@ -81,7 +85,11 @@
             return;
         }
         if (message.trim() !== '') {
-            socket.emit('message', { sender: username, content: message, room });
+            socket.emit('message', {
+                sender: username,
+                content: message,
+                room,
+            });
             message = '';
         } else {
             alert('Please enter a message.');
@@ -97,7 +105,7 @@
         messages = [];
         socket.emit('leaveRoom', { room });
         socket.emit('joinRoom', { room, username, password });
-        
+
         currentRoom = room;
     }
 
@@ -261,7 +269,10 @@
         color: #1a1a2e;
         font-weight: bold;
         cursor: pointer;
-        transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+        transition:
+            background 0.3s,
+            transform 0.3s,
+            box-shadow 0.3s;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         color: white;
     }

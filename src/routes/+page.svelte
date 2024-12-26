@@ -1,33 +1,32 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
+    import { goto } from '$app/navigation';
+    import { browser } from '$app/environment';
 
-	let username: string;
+    let username: string;
 
-	if (browser) {
-		username = localStorage.getItem('username') || '';
-	}
+    if (browser) {
+        username = localStorage.getItem('username') || '';
+    }
 
-	function start() {
-		if (browser) {
-			if (username !== '' && username.trim() !== '') {
-				if (username != 'Guest') {
-					localStorage.setItem('username', username);
-				}
-			} else {
-				username = 'Guest';
-				localStorage.removeItem('username');
-			}
-		}
-		goto('/rooms');
-	}
+    function start() {
+        if (browser) {
+            if (username !== '' && username.trim() !== '') {
+                if (username != 'Guest') {
+                    localStorage.setItem('username', username);
+                }
+            } else {
+                localStorage.removeItem('username');
+            }
+        }
+        goto('/rooms');
+    }
 </script>
 
 <div class="container">
-	<h1>Live Chat</h1>
-	<h2>Enter your username</h2>
-	<input bind:value={username} placeholder="Username" />
-	<button on:click={start}>Submit</button>
+    <h1>Live Chat</h1>
+    <h2>Enter your username</h2>
+    <input bind:value={username} placeholder="Username" />
+    <button on:click={start}>Submit</button>
 </div>
 
 <style>
@@ -73,7 +72,9 @@
         background: #0f3460;
         color: #e0e0e0;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: box-shadow 0.3s, background 0.3s;
+        transition:
+            box-shadow 0.3s,
+            background 0.3s;
     }
 
     input:focus {
