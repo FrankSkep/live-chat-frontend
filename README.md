@@ -23,6 +23,15 @@ The backend repository for this frontend can be found at [https://github.com/Fra
 - **Secure Rooms**: Option to create password-protected chat rooms.
 - **Message Deletion**: Ability to delete all messages from a chat room.
 
+<div align="center">
+    <h3>Home page</h3>
+    <img src="static/ss1.png" alt="Img1">
+    <h3>Room selector page</h3>
+    <img src="static/ss2.png" alt="Img2">
+    <h3>Room page</h3>
+    <img src="static/ss3.png" alt="Img3">
+</div>
+
 ## Installation
 
 1. Clone the repository:
